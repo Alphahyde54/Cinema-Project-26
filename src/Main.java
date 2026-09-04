@@ -27,8 +27,8 @@ void main() {
             back(systemIsRunning, backOrExit);
         }
         if (menuPressed == 2) {
-            bookSeat();
-            //IO.println("Du har nu booket; " + bookedseat);
+            String bookedSeat = bookSeat();
+            IO.println("Du har nu booket; " + bookedSeat);
             String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
             back(systemIsRunning, backOrExit);
         }
@@ -123,7 +123,6 @@ String bookSeat() {
                     vacantSeatPicked = false;
                 }
                 bookedSeat += "\nrække " + (chosenRow + 1) + ", sæde " + (chosenCollumn + 1);
-
             }
         }
 
