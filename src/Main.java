@@ -1,6 +1,11 @@
 void main() {
     boolean systemIsRunning = true;
     int order = 1;
+    boolean accessGranted = true;
+    int moviePrice = 105;
+
+
+
     while (systemIsRunning) {
         String[] movieNames = {"Star Wars - Roque one", "Dune 2", "Spider-Man, Brand new day", "Cocaine Bear", "The Odyssey"};
         menu();
@@ -8,18 +13,29 @@ void main() {
         int menuPressed = Integer.parseInt(IO.readln("Hvor vil du hen idag? Vælg mellem 1-3 "));
 
         if (menuPressed == 1) {
-            Boolean correctPassword = IO.readln("Angiv adganskode: ").equalsIgnoreCase("Alphahyde54");
-            for (int I = 0; I < 4; I++) { // This shit doesn't work. Tror det er et problem med {}
+            for (int I = 1; I < 4; I++) { // This shit doesn't work. Tror det er et problem med {}
+                boolean correctPassword = IO.readln("Angiv adganskode: ").equalsIgnoreCase("Alphahyde54");
                 if (correctPassword) {
+                    accessGranted = true;
                     break;
                 } else if (I == 3) {
                     IO.println("Adgangskode indtastet forkert for mange gange");
-                    systemIsRunning = false;
+                    accessGranted = false;
+                    break;
                 } else {
                     IO.println("Adgangskode er forkert");
                 }
             }
-                IO.println("Velkommen til Admin menuen");
+
+            if(!accessGranted) {
+                systemIsRunning = false;
+                continue;
+            }
+            IO.println("Velkommen til Admin menuen");
+            IO.println("1. Rediger filmliste\n2. Ret billet pris\n3. Rediger biografsal");
+            int adminMenuPressed = Integer.parseInt(IO.readln("Hvor vil du hen idag? Vælg mellem 1-3 "));
+
+            if (adminMenuPressed == 1) {
                 for (String everyFilm : movieNames) {
                     IO.println(order + ". " + everyFilm);
                     order++;
@@ -34,14 +50,22 @@ void main() {
                     IO.println(order + ". " + everyFilm);
                     order++;
                 }
-                String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
-                back(systemIsRunning, backOrExit);
+            }
+
+            if (adminMenuPressed == 2) {
+                IO.println("Den nuværende billetpris er: " + moviePrice + "kr.\n");
+                moviePrice = Integer.parseInt(IO.readln("Hvilken ny billet pris vil du angive? "));
+                IO.println("Den nye billetpris pr stk. er: " + moviePrice);
+            }
+            String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
+            systemIsRunning = back(systemIsRunning, backOrExit);
+
         }
         if (menuPressed == 2) {
             String bookedSeat = bookSeat();
             IO.println("Du har nu booket; " + bookedSeat);
             String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
-            back(systemIsRunning, backOrExit);
+            systemIsRunning = back(systemIsRunning, backOrExit);
         }
         if (menuPressed == 3) {
             IO.println("God dag :)");
@@ -55,12 +79,12 @@ void main() {
 
 
 
-boolean back(boolean systemRunning, String backOrExit) {
+boolean back(boolean systemIsRunning, String backOrExit) {
     if (backOrExit.equals("e")) {
         IO.println("God dag :)");
-        systemRunning = false;
+        systemIsRunning = false;
     }
-    return systemRunning;
+    return systemIsRunning;
 }
 
 String filmListe (String[] movieNames) {
