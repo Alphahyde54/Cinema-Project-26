@@ -1,19 +1,20 @@
+import java.util.LinkedList;
 void main() {
     boolean systemIsRunning = true;
     int order = 1;
     boolean accessGranted = true;
     int moviePrice = 105;
-
+    theaterlist();
 
 
     while (systemIsRunning) {
-        String[] movieNames = {"Star Wars - Roque one", "Dune 2", "Spider-Man, Brand new day", "Cocaine Bear", "The Odyssey"};
+        String[] movieNames = {"Star Wars - Roque one", "Cocaine Bear", "The Odyssey"};
         menu();
 
         int menuPressed = Integer.parseInt(IO.readln("Hvor vil du hen idag? Vælg mellem 1-3 "));
 
         if (menuPressed == 1) {
-            for (int I = 1; I < 4; I++) { // This shit doesn't work. Tror det er et problem med {}
+            for (int I = 1; I < 4; I++) {
                 boolean correctPassword = IO.readln("Angiv adganskode: ").equalsIgnoreCase("Alphahyde54");
                 if (correctPassword) {
                     accessGranted = true;
@@ -31,15 +32,12 @@ void main() {
                 systemIsRunning = false;
                 continue;
             }
-            IO.println("Velkommen til Admin menuen");
+            IO.println("\nVelkommen til Admin menuen");
             IO.println("1. Rediger filmliste\n2. Ret billet pris\n3. Rediger biografsal");
             int adminMenuPressed = Integer.parseInt(IO.readln("Hvor vil du hen idag? Vælg mellem 1-3 "));
 
             if (adminMenuPressed == 1) {
-                for (String everyFilm : movieNames) {
-                    IO.println(order + ". " + everyFilm);
-                    order++;
-                }
+                filmListe(movieNames, order);
 
                 int chosenFilm = Integer.parseInt(IO.readln("\nHvilken film vil du redigere? "));
                 movieNames[chosenFilm - 1] = IO.readln("\nHvad er den nye film du vil erstatte med?\n");
@@ -50,19 +48,46 @@ void main() {
                     IO.println(order + ". " + everyFilm);
                     order++;
                 }
+            } else if (adminMenuPressed == 2) {
+                IO.println("\nDen nuværende billetpris er: " + moviePrice + "kr.");
+                moviePrice = Integer.parseInt(IO.readln("\nHvilken ny billet pris vil du angive? "));
+                IO.println("\nDen nye billetpris pr stk. er: " + moviePrice);
+            } else if (adminMenuPressed == 3) {
+                IO.println();
+                List<boolean[][]> movieTheater = theaterlist();
+                int roomNum = 1;
+
+                for (boolean[][] theaterRooms : movieTheater) {
+                    int rows = theaterRooms.length;
+                    int totalSeats = 0;
+                    for (boolean[] row : theaterRooms) {
+                        totalSeats += row.length;
+                    }
+
+                    IO.println(String.format("Sal %d. Rækker: %d Sæder: %d", roomNum, rows, totalSeats));
+                    roomNum++;
+                }
+
+                int adminChosenRoom = Integer.parseInt(IO.readln("Hvilken sal vil du gerne redigere? "));
+                editTheaterRoom(adminChosenRoom, movieTheater);
+
+            } else {
+                String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte ");
+                systemIsRunning = back(systemIsRunning, backOrExit);
             }
 
-            if (adminMenuPressed == 2) {
-                IO.println("Den nuværende billetpris er: " + moviePrice + "kr.\n");
-                moviePrice = Integer.parseInt(IO.readln("Hvilken ny billet pris vil du angive? "));
-                IO.println("Den nye billetpris pr stk. er: " + moviePrice);
-            }
-            String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
+
+            String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte ");
             systemIsRunning = back(systemIsRunning, backOrExit);
 
         }
         if (menuPressed == 2) {
-            String bookedSeat = bookSeat();
+            filmListe(movieNames, order);
+            int userChosenFilm = Integer.parseInt(IO.readln("Hvilken film vil du se?"));
+            List <boolean[][]> movieTheater = theaterlist();
+            boolean[][] chosenFilm = movieTheater.get(userChosenFilm);
+            IO.print("\n                              " + movieNames[userChosenFilm] + " \n\n\n");
+            String bookedSeat = bookSeat(chosenFilm);
             IO.println("Du har nu booket; " + bookedSeat);
             String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
             systemIsRunning = back(systemIsRunning, backOrExit);
@@ -76,7 +101,28 @@ void main() {
 
 
 
+List <boolean[][]> theaterlist() {
+    List <boolean[][]> movieTheater = new ArrayList<>();
+    boolean[][] theater1 = new boolean[5][8];
+    boolean[][] theater2 = new boolean[5][8];
+    boolean[][] theater3 = new boolean[5][8];
+    movieTheater.add(theater1);
+    movieTheater.add(theater2);
+    movieTheater.add(theater3);
+    return movieTheater;
+}
 
+boolean[][] editTheaterRoom(int adminChosenRoom, List<boolean[][]> movieTheater) {
+    int adminEditrow = Integer.parseInt(IO.readln("Hvor mange rækker skal salen have? "));
+    int adminEditamountseats = Integer.parseInt(IO.readln("Hvor mange rækker skal salen have? "));
+    boolean[][] roomToEdit = new boolean[adminEditrow][adminEditamountseats];
+    IO.println(String.format("""
+                            Sal %d. har nu følgende layout:
+                            Rækker: %d
+                            Antal sæder: %d
+                            """, adminChosenRoom, adminEditrow, adminEditamountseats));
+   return movieTheater.set(adminChosenRoom,roomToEdit);
+}
 
 
 boolean back(boolean systemIsRunning, String backOrExit) {
@@ -87,11 +133,13 @@ boolean back(boolean systemIsRunning, String backOrExit) {
     return systemIsRunning;
 }
 
-String filmListe (String[] movieNames) {
+String filmListe (String[] movieNames, int order) {
     String liste = "";
     for (String everyFilm : movieNames) {
-        IO.println("\n-" + everyFilm);
+        IO.println(order + ". " + everyFilm);
+        order++;
     }
+    order = 1;
     return liste;
 }
 
@@ -102,18 +150,17 @@ void menu() {
     IO.println("3. Exit");
 }
 
-String bookSeat() {
-    boolean[][] seats = new boolean[5][8];
+String bookSeat(boolean[][] chosenFilm) {
     IO.print("\n                              -lærred- \n\n\n");
     String booked = "|x|";
     String unbooked = "|_|";
-    seats[0][5] = true;
-    seats[0][4] = true;
+    chosenFilm[0][5] = true;
+    chosenFilm[0][4] = true;
 
 
-    for (int i = 0; i < seats.length; i++) {
-        for (int j = 0; j < seats[i].length; j++) {
-            if (seats[i][j]) {
+    for (int i = 0; i < chosenFilm.length; i++) {
+        for (int j = 0; j < chosenFilm[i].length; j++) {
+            if (chosenFilm[i][j]) {
                 IO.print("\t" + booked + "\t");
             } else {
                 IO.print("\t" + unbooked + "\t");
@@ -133,14 +180,14 @@ String bookSeat() {
 
             chosenRow -= 1;
             chosenCollumn -= 1;
-            if (seats[chosenRow][chosenCollumn]) {
+            if (chosenFilm[chosenRow][chosenCollumn]) {
                 IO.println("Dette sæde er desværre allerede booket, vælg venligst et nyt");
             } else {
-                seats[chosenRow][chosenCollumn] = true;
+                chosenFilm[chosenRow][chosenCollumn] = true;
                 IO.print("\n                              -lærred- \n\n\n");
-                for (int i = 0; i < seats.length; i++) {
-                    for (int j = 0; j < seats[i].length; j++) {
-                        if (seats[i][j]) {
+                for (int i = 0; i < chosenFilm.length; i++) {
+                    for (int j = 0; j < chosenFilm[i].length; j++) {
+                        if (chosenFilm[i][j]) {
                             IO.print("\t" + booked + "\t");
                         } else {
                             IO.print("\t" + unbooked + "\t");
