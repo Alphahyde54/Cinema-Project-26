@@ -1,21 +1,21 @@
-import java.util.LinkedList;
 void main() {
     boolean systemIsRunning = true;
     int order = 1;
     boolean accessGranted = true;
     int moviePrice = 105;
     theaterlist();
+    List<boolean[][]> movieTheater = theaterlist();
 
 
     while (systemIsRunning) {
-        String[] movieNames = {"Star Wars - Roque one", "Cocaine Bear", "The Odyssey"};
-        menu();
+        String[] movieNames = {"Star Wars - Roque one", "Cocaine Bear", "The Odyssey"}; // Angivede film
+        menu(); // Strings med menu-punkter
 
         int menuPressed = Integer.parseInt(IO.readln("Hvor vil du hen idag? Vælg mellem 1-3 "));
 
         if (menuPressed == 1) {
-            for (int I = 1; I < 4; I++) {
-                boolean correctPassword = IO.readln("Angiv adganskode: ").equalsIgnoreCase("Alphahyde54");
+            for (int I = 1; I < 4; I++) { // Adgangskode validering
+                boolean correctPassword = IO.readln("Angiv adganskode: ").equalsIgnoreCase("Alphahyde54"); // angivet "korrekt" adgangskode
                 if (correctPassword) {
                     accessGranted = true;
                     break;
@@ -28,7 +28,7 @@ void main() {
                 }
             }
 
-            if(!accessGranted) {
+            if(!accessGranted) { // hvis adgangskode er forkert, slukker den hele koden
                 systemIsRunning = false;
                 continue;
             }
@@ -36,7 +36,7 @@ void main() {
             IO.println("1. Rediger filmliste\n2. Ret billet pris\n3. Rediger biografsal");
             int adminMenuPressed = Integer.parseInt(IO.readln("Hvor vil du hen idag? Vælg mellem 1-3 "));
 
-            if (adminMenuPressed == 1) {
+            if (adminMenuPressed == 1) { //film redigering.
                 filmListe(movieNames, order);
 
                 int chosenFilm = Integer.parseInt(IO.readln("\nHvilken film vil du redigere? "));
@@ -48,16 +48,15 @@ void main() {
                     IO.println(order + ". " + everyFilm);
                     order++;
                 }
-            } else if (adminMenuPressed == 2) {
+            } else if (adminMenuPressed == 2) { // Pris redigering
                 IO.println("\nDen nuværende billetpris er: " + moviePrice + "kr.");
                 moviePrice = Integer.parseInt(IO.readln("\nHvilken ny billet pris vil du angive? "));
                 IO.println("\nDen nye billetpris pr stk. er: " + moviePrice);
-            } else if (adminMenuPressed == 3) {
+            } else if (adminMenuPressed == 3) { // Film størrelses redigering
                 IO.println();
-                List<boolean[][]> movieTheater = theaterlist();
                 int roomNum = 1;
 
-                for (boolean[][] theaterRooms : movieTheater) {
+                for (boolean[][] theaterRooms : movieTheater) { // for-loop for at hente rows og sæder i alle sale
                     int rows = theaterRooms.length;
                     int totalSeats = 0;
                     for (boolean[] row : theaterRooms) {
@@ -69,7 +68,8 @@ void main() {
                 }
 
                 int adminChosenRoom = Integer.parseInt(IO.readln("Hvilken sal vil du gerne redigere? "));
-                editTheaterRoom(adminChosenRoom, movieTheater);
+                boolean[][] roomToEdit = editTheaterRoom(adminChosenRoom, movieTheater); // Funktion til at redigere film sal.
+                movieTheater.set(adminChosenRoom,roomToEdit);
 
             } else {
                 String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte ");
@@ -83,10 +83,9 @@ void main() {
         }
         if (menuPressed == 2) {
             filmListe(movieNames, order);
-            int userChosenFilm = Integer.parseInt(IO.readln("Hvilken film vil du se?"));
-            List <boolean[][]> movieTheater = theaterlist();
-            boolean[][] chosenFilm = movieTheater.get(userChosenFilm);
-            IO.print("\n                              " + movieNames[userChosenFilm] + " \n\n\n");
+            int userChosenFilm = Integer.parseInt(IO.readln("Hvilken film vil du se? "));
+            boolean[][] chosenFilm = movieTheater.get(userChosenFilm-1); // vælger specifik sal, til den angivede film at kunden vil se.
+            IO.print("\n                        " + movieNames[userChosenFilm-1] + " \n");
             String bookedSeat = bookSeat(chosenFilm);
             IO.println("Du har nu booket; " + bookedSeat);
             String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
@@ -121,7 +120,7 @@ boolean[][] editTheaterRoom(int adminChosenRoom, List<boolean[][]> movieTheater)
                             Rækker: %d
                             Antal sæder: %d
                             """, adminChosenRoom, adminEditrow, adminEditamountseats));
-   return movieTheater.set(adminChosenRoom,roomToEdit);
+   return roomToEdit;
 }
 
 
@@ -154,8 +153,6 @@ String bookSeat(boolean[][] chosenFilm) {
     IO.print("\n                              -lærred- \n\n\n");
     String booked = "|x|";
     String unbooked = "|_|";
-    chosenFilm[0][5] = true;
-    chosenFilm[0][4] = true;
 
 
     for (int i = 0; i < chosenFilm.length; i++) {
