@@ -68,7 +68,7 @@ void main() {
                 }
 
                 int adminChosenRoom = Integer.parseInt(IO.readln("Hvilken sal vil du gerne redigere? "));
-                boolean[][] roomToEdit = editTheaterRoom(adminChosenRoom, movieTheater); // Funktion til at redigere film sal.
+                boolean[][] roomToEdit = editTheaterRoom(adminChosenRoom); // Funktion til at redigere film sal.
                 movieTheater.set(adminChosenRoom,roomToEdit);
 
             } else {
@@ -83,9 +83,10 @@ void main() {
         }
         if (menuPressed == 2) {
             filmListe(movieNames, order);
-            int userChosenFilm = Integer.parseInt(IO.readln("Hvilken film vil du se? "));
+            int userChosenFilm = Integer.parseInt(IO.readln("Hvilken film vil du se? \n"));
             boolean[][] chosenFilm = movieTheater.get(userChosenFilm-1); // vælger specifik sal, til den angivede film at kunden vil se.
             IO.print("\n                        " + movieNames[userChosenFilm-1] + " \n");
+           // int antalBilletter = Integer.parseInt(IO.readln("Hvor mange billetter vil du bestille? "));
             String bookedSeat = bookSeat(chosenFilm);
             IO.println("Du har nu booket; " + bookedSeat);
             String backOrExit = IO.readln("\nTryk Enter for at komme tilbage, eller (e) for at afslutte");
@@ -111,7 +112,7 @@ List <boolean[][]> theaterlist() {
     return movieTheater;
 }
 
-boolean[][] editTheaterRoom(int adminChosenRoom, List<boolean[][]> movieTheater) {
+boolean[][] editTheaterRoom(int adminChosenRoom) {
     int adminEditrow = Integer.parseInt(IO.readln("Hvor mange rækker skal salen have? "));
     int adminEditamountseats = Integer.parseInt(IO.readln("Hvor mange rækker skal salen have? "));
     boolean[][] roomToEdit = new boolean[adminEditrow][adminEditamountseats];
