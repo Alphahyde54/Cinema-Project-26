@@ -6,7 +6,7 @@ void main() {
     theaterlist();
     List<boolean[][]> movieTheater = theaterlist();
 
-
+//bb
     while (systemIsRunning) {
         String[] movieNames = {"Star Wars - Roque one", "Cocaine Bear", "The Odyssey"}; // Angivede film
         menu(); // Strings med menu-punkter
